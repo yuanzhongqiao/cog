@@ -1,75 +1,127 @@
-# Cog: Containers for machine learning
-
-Cog is an open-source tool that lets you package machine learning models in a standard, production-ready container.
-
-You can deploy your packaged model to your own infrastructure, or to [Replicate](https://replicate.com/).
-
-## Highlights
-
-- 📦 **Docker containers without the pain.** Writing your own `Dockerfile` can be a bewildering process. With Cog, you define your environment with a [simple configuration file](#how-it-works) and it generates a Docker image with all the best practices: Nvidia base images, efficient caching of dependencies, installing specific Python versions, sensible environment variable defaults, and so on.
-
-- 🤬️ **No more CUDA hell.** Cog knows which CUDA/cuDNN/PyTorch/Tensorflow/Python combos are compatible and will set it all up correctly for you.
-
-- ✅ **Define the inputs and outputs for your model with standard Python.** Then, Cog generates an OpenAPI schema and validates the inputs and outputs with Pydantic.
-
-- 🎁 **Automatic HTTP prediction server**: Your model's types are used to dynamically generate a RESTful HTTP API using [FastAPI](https://fastapi.tiangolo.com/).
-
-- 🥞 **Automatic queue worker.** Long-running deep learning models or batch processing is best architected with a queue. Cog models do this out of the box. Redis is currently supported, with more in the pipeline.
-
-- ☁️ **Cloud storage.** Files can be read and written directly to Amazon S3 and Google Cloud Storage. (Coming soon.)
-
-- 🚀 **Ready for production.** Deploy your model anywhere that Docker images run. Your own infrastructure, or [Replicate](https://replicate.com).
-
-## How it works
-
-Define the Docker environment your model runs in with `cog.yaml`:
-
-```yaml
-build:
+<div class="Box-sc-g0xbh4-0 bJMeLZ js-snippet-clipboard-copy-unpositioned" data-hpc="true"><article class="markdown-body entry-content container-lg" itemprop="text"><div class="markdown-heading" dir="auto"><h1 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cog：机器学习的容器</font></font></h1><a id="user-content-cog-containers-for-machine-learning" class="anchor" aria-label="永久链接：Cog：机器学习容器" href="#cog-containers-for-machine-learning"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Cog 是一种开源工具，可让您将机器学习模型打包到标准的生产就绪容器中。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您可以将打包的模型部署到您自己的基础设施中，或者复制到</font></font><a href="https://replicate.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Replicate</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">中。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">强调</font></font></h2><a id="user-content-highlights" class="anchor" aria-label="永久链接：亮点" href="#highlights"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📦 </font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Docker 容器没有任何痛苦。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自己编写</font></font><code>Dockerfile</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">可能是一个令人困惑的过程。使用 Cog，您可以使用</font></font><a href="#how-it-works"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">简单的配置文件</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">定义环境</font><font style="vertical-align: inherit;">，它会生成具有所有最佳实践的 Docker 映像：Nvidia 基础映像、高效的依赖项缓存、安装特定的 Python 版本、合理的环境变量默认值等。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🤬️</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">不再有 CUDA 地狱。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Cog 知道哪些 CUDA/cuDNN/PyTorch/Tensorflow/Python 组合兼容，并将为您正确设置。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">✅</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用标准 Python 定义模型的输入和输出。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">然后，Cog 生成 OpenAPI 模式并使用 Pydantic 验证输入和输出。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🎁</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动 HTTP 预测服务器</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：模型的类型用于使用</font></font><a href="https://fastapi.tiangolo.com/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">FastAPI</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">动态生成 RESTful HTTP API 。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🥞</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">自动队列工作者。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">长时间运行的深度学习模型或批处理最好使用队列来构建。齿轮模型可以开箱即用地执行此操作。目前支持 Redis，更多内容正在筹备中。</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">☁️</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">云存储。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">文件可以直接读取和写入 Amazon S3 和 Google Cloud Storage。 （即将推出。）</font></font></p>
+</li>
+<li>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🚀</font></font><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">准备生产。</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将模型部署在 Docker 映像运行的任何位置。您自己的基础设施，或</font></font><a href="https://replicate.com" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">复制</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+</li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">怎么运行的</font></font></h2><a id="user-content-how-it-works" class="anchor" aria-label="永久链接：它是如何工作的" href="#how-it-works"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">定义模型运行的 Docker 环境</font></font><code>cog.yaml</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：</font></font></p>
+<div class="highlight highlight-source-yaml notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-ent">build</span>:
+  <span class="pl-ent">gpu</span>: <span class="pl-c1">true</span>
+  <span class="pl-ent">system_packages</span>:
+    - <span class="pl-s"><span class="pl-pds">"</span>libgl1-mesa-glx<span class="pl-pds">"</span></span>
+    - <span class="pl-s"><span class="pl-pds">"</span>libglib2.0-0<span class="pl-pds">"</span></span>
+  <span class="pl-ent">python_version</span>: <span class="pl-s"><span class="pl-pds">"</span>3.11<span class="pl-pds">"</span></span>
+  <span class="pl-ent">python_packages</span>:
+    - <span class="pl-s"><span class="pl-pds">"</span>torch==1.8.1<span class="pl-pds">"</span></span>
+<span class="pl-ent">predict</span>: <span class="pl-s"><span class="pl-pds">"</span>predict.py:Predictor<span class="pl-pds">"</span></span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="build:
   gpu: true
   system_packages:
-    - "libgl1-mesa-glx"
-    - "libglib2.0-0"
-  python_version: "3.11"
+    - &quot;libgl1-mesa-glx&quot;
+    - &quot;libglib2.0-0&quot;
+  python_version: &quot;3.11&quot;
   python_packages:
-    - "torch==1.8.1"
-predict: "predict.py:Predictor"
-```
+    - &quot;torch==1.8.1&quot;
+predict: &quot;predict.py:Predictor&quot;" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">定义如何在模型上运行预测</font></font><code>predict.py</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">：</font></font></p>
+<div class="highlight highlight-source-python notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-k">from</span> <span class="pl-s1">cog</span> <span class="pl-k">import</span> <span class="pl-v">BasePredictor</span>, <span class="pl-v">Input</span>, <span class="pl-v">Path</span>
+<span class="pl-k">import</span> <span class="pl-s1">torch</span>
 
-Define how predictions are run on your model with `predict.py`:
+<span class="pl-k">class</span> <span class="pl-v">Predictor</span>(<span class="pl-v">BasePredictor</span>):
+    <span class="pl-k">def</span> <span class="pl-en">setup</span>(<span class="pl-s1">self</span>):
+        <span class="pl-s">"""Load the model into memory to make running multiple predictions efficient"""</span>
+        <span class="pl-s1">self</span>.<span class="pl-s1">model</span> <span class="pl-c1">=</span> <span class="pl-s1">torch</span>.<span class="pl-en">load</span>(<span class="pl-s">"./weights.pth"</span>)
 
-```python
-from cog import BasePredictor, Input, Path
+    <span class="pl-c"># The arguments and types the model takes as input</span>
+    <span class="pl-k">def</span> <span class="pl-en">predict</span>(<span class="pl-s1">self</span>,
+          <span class="pl-s1">image</span>: <span class="pl-v">Path</span> <span class="pl-c1">=</span> <span class="pl-v">Input</span>(<span class="pl-s1">description</span><span class="pl-c1">=</span><span class="pl-s">"Grayscale input image"</span>)
+    ) <span class="pl-c1">-&gt;</span> <span class="pl-v">Path</span>:
+        <span class="pl-s">"""Run a single prediction on the model"""</span>
+        <span class="pl-s1">processed_image</span> <span class="pl-c1">=</span> <span class="pl-en">preprocess</span>(<span class="pl-s1">image</span>)
+        <span class="pl-s1">output</span> <span class="pl-c1">=</span> <span class="pl-s1">self</span>.<span class="pl-en">model</span>(<span class="pl-s1">processed_image</span>)
+        <span class="pl-k">return</span> <span class="pl-en">postprocess</span>(<span class="pl-s1">output</span>)</pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="from cog import BasePredictor, Input, Path
 import torch
 
 class Predictor(BasePredictor):
     def setup(self):
-        """Load the model into memory to make running multiple predictions efficient"""
-        self.model = torch.load("./weights.pth")
+        &quot;&quot;&quot;Load the model into memory to make running multiple predictions efficient&quot;&quot;&quot;
+        self.model = torch.load(&quot;./weights.pth&quot;)
 
     # The arguments and types the model takes as input
     def predict(self,
-          image: Path = Input(description="Grayscale input image")
+          image: Path = Input(description=&quot;Grayscale input image&quot;)
     ) -> Path:
-        """Run a single prediction on the model"""
+        &quot;&quot;&quot;Run a single prediction on the model&quot;&quot;&quot;
         processed_image = preprocess(image)
         output = self.model(processed_image)
-        return postprocess(output)
-```
-
-Now, you can run predictions on this model:
-
-```console
-$ cog predict -i image=@input.jpg
+        return postprocess(output)" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">现在，您可以对此模型运行预测：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre>$ <span class="pl-s1">cog predict -i image=@input.jpg</span>
+<span class="pl-c1">--&gt; Building Docker image...</span>
+<span class="pl-c1">--&gt; Running Prediction...</span>
+<span class="pl-c1">--&gt; Output written to output.jpg</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="$ cog predict -i image=@input.jpg
 --> Building Docker image...
 --> Running Prediction...
---> Output written to output.jpg
-```
+--> Output written to output.jpg" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，构建用于部署的 Docker 映像：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre>$ <span class="pl-s1">cog build -t my-colorization-model</span>
+<span class="pl-c1">--&gt; Building Docker image...</span>
+<span class="pl-c1">--&gt; Built my-colorization-model:latest</span>
 
-Or, build a Docker image for deployment:
+$ <span class="pl-s1">docker run -d -p 5000:5000 --gpus all my-colorization-model</span>
 
-```console
-$ cog build -t my-colorization-model
+$ <span class="pl-s1">curl http://localhost:5000/predictions -X POST \</span>
+<span class="pl-c1">    -H 'Content-Type: application/json' \</span>
+<span class="pl-c1">    -d '{"input": {"image": "https://.../input.jpg"}}'</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="$ cog build -t my-colorization-model
 --> Building Docker image...
 --> Built my-colorization-model:latest
 
@@ -77,160 +129,164 @@ $ docker run -d -p 5000:5000 --gpus all my-colorization-model
 
 $ curl http://localhost:5000/predictions -X POST \
     -H 'Content-Type: application/json' \
-    -d '{"input": {"image": "https://.../input.jpg"}}'
-```
+    -d '{&quot;input&quot;: {&quot;image&quot;: &quot;https://.../input.jpg&quot;}}'" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
 
-<!-- NOTE (bfirsh): Development environment instructions intentionally left out of readme for now, so as not to confuse the "ship a model to production" message.
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们为什么要建造这个？</font></font></h2><a id="user-content-why-are-we-building-this" class="anchor" aria-label="永久链接：我们为什么要建造这个？" href="#why-are-we-building-this"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">对于研究人员来说，将机器学习模型投入生产确实很困难。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">解决方案的一部分是 Docker，但让它发挥作用非常复杂：Dockerfile、预处理/后处理、Flask 服务器、CUDA 版本。通常情况下，研究人员必须与工程师坐下来部署这个该死的东西。</font></font></p>
+<p dir="auto"><a href="https://github.com/andreasjansson"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安德烈亚斯</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和</font></font><a href="https://github.com/bfirsh"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">本</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">创建了 Cog。 Andreas 曾在 Spotify 工作，在那里他构建了使用 Docker 构建和部署 ML 模型的工具。 Ben 在 Docker 工作，并在那里创建了</font></font><a href="https://github.com/docker/compose"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Docker Compose</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们意识到，除了 Spotify 之外，其他公司也在使用 Docker 来构建和部署机器学习模型。</font></font><a href="https://eng.uber.com/michelangelo-pyml/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Uber</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">和其他公司也构建了类似的系统。因此，我们正在制作一个开源版本，以便其他人也可以这样做。</font></font></p>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您有兴趣使用它或想与我们合作，请联系我们。</font></font><a href="https://discord.gg/replicate" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">我们在 Discord 上</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或发送电子邮件至</font></font><a href="mailto:team@replicate.com"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">team@replicate.com</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">先决条件</font></font></h2><a id="user-content-prerequisites" class="anchor" aria-label="永久链接：先决条件" href="#prerequisites"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">macOS、Linux 或 Windows 11</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。 Cog 可通过</font><a href="/replicate/cog/blob/main/docs/wsl2/wsl2.md"><font style="vertical-align: inherit;">WSL 2</font></a><font style="vertical-align: inherit;">在 macOS、Linux 和 Windows 11 上运行</font></font><a href="/replicate/cog/blob/main/docs/wsl2/wsl2.md"><font style="vertical-align: inherit;"></font></a></li>
+<li><strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">码头工人</font></font></strong><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。 Cog 使用 Docker 为您的模型创建容器。您需要先</font></font><a href="https://docs.docker.com/get-docker/" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装 Docker，</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">然后才能运行 Cog。如果您安装 Docker Engine 而不是 Docker Desktop，则还需要</font></font><a href="https://docs.docker.com/build/architecture/#buildx" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装 Buildx</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">。</font></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安装</font></font></h2><a id="user-content-install" class="anchor" aria-label="永久链接：安装" href="#install"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您使用的是 macOS，则可以使用 Homebrew 安装 Cog：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-c1">brew install cog</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="brew install cog" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">您还可以通过在终端中运行以下命令直接从 GitHub 下载并安装最新版本的 Cog：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-c1">sudo curl -o /usr/local/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"</span>
+<span class="pl-c1">sudo chmod +x /usr/local/bin/cog</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="sudo curl -o /usr/local/bin/cog -L &quot;https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)&quot;
+sudo chmod +x /usr/local/bin/cog" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">或者，您可以从源代码构建 Cog 并使用以下命令安装它：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-c1">make</span>
+<span class="pl-c1">sudo make install</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="make
+sudo make install" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">升级</font></font></h2><a id="user-content-upgrade" class="anchor" aria-label="永久链接：升级" href="#upgrade"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您之前从 GitHub Releases URL 安装了 Cog，则可以通过运行用于安装它的相同命令来升级到最新版本：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-c1">sudo curl -o /usr/local/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"</span>
+<span class="pl-c1">sudo chmod +x /usr/local/bin/cog</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="sudo curl -o /usr/local/bin/cog -L &quot;https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)&quot;
+sudo chmod +x /usr/local/bin/cog" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">如果您使用的是 macOS 并且之前通过 Homebrew 安装了 Cog，请运行以下命令：</font></font></p>
+<div class="highlight highlight-text-shell-session notranslate position-relative overflow-auto" dir="auto"><pre><span class="pl-c1">brew upgrade cog</span></pre><div class="zeroclipboard-container">
+    <clipboard-copy aria-label="Copy" class="ClipboardButton btn btn-invisible js-clipboard-copy m-2 p-0 tooltipped-no-delay d-flex flex-justify-center flex-items-center" data-copy-feedback="Copied!" data-tooltip-direction="w" value="brew upgrade cog" tabindex="0" role="button">
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-copy js-clipboard-copy-icon">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+</svg>
+      <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16" data-view-component="true" class="octicon octicon-check js-clipboard-check-icon color-fg-success d-none">
+    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+</svg>
+    </clipboard-copy>
+  </div></div>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">下一步</font></font></h2><a id="user-content-next-steps" class="anchor" aria-label="永久链接：后续步骤" href="#next-steps"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<ul dir="auto">
+<li><a href="/replicate/cog/blob/main/docs/getting-started.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">开始使用示例模型</font></font></a></li>
+<li><a href="/replicate/cog/blob/main/docs/getting-started-own-model.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">开始使用您自己的模型</font></font></a></li>
+<li><a href="/replicate/cog/blob/main/docs/notebooks.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">将 Cog 与笔记本一起使用</font></font></a></li>
+<li><a href="/replicate/cog/blob/main/docs/wsl2/wsl2.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">在 Windows 11 中使用 Cog</font></font></a></li>
+<li><a href="https://github.com/replicate/cog-examples"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">看一下使用 Cog 的一些示例</font></font></a></li>
+<li><a href="/replicate/cog/blob/main/docs/deploy.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">使用 Cog 部署模型</font></font></a></li>
+<li><a href="/replicate/cog/blob/main/docs/yaml.md"><code>cog.yaml</code><font style="vertical-align: inherit;"></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">了解如何定义模型环境的</font><a href="/replicate/cog/blob/main/docs/yaml.md"><font style="vertical-align: inherit;">参考</font></a></font></li>
+<li><a href="/replicate/cog/blob/main/docs/python.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">预测界面参考</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">以了解</font></font><code>Predictor</code><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">界面的工作原理</font></font></li>
+<li><a href="/replicate/cog/blob/main/docs/training.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">训练界面参考</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，了解如何向模型添加微调 API</font></font></li>
+<li><a href="/replicate/cog/blob/main/docs/http.md"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">HTTP API 参考</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">，了解如何使用模型提供的 HTTP API</font></font></li>
+</ul>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">需要帮忙？</font></font></h2><a id="user-content-need-help" class="anchor" aria-label="永久链接：需要帮助吗？" href="#need-help"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><a href="https://discord.gg/replicate" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">加入我们在 Discord 上的 #cog。</font></font></a></p>
+<div class="markdown-heading" dir="auto"><h2 tabindex="-1" class="heading-element" dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">贡献者✨</font></font></h2><a id="user-content-contributors-" class="anchor" aria-label="永久链接：贡献者✨" href="#contributors-"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path d="m7.775 3.275 1.25-1.25a3.5 3.5 0 1 1 4.95 4.95l-2.5 2.5a3.5 3.5 0 0 1-4.95 0 .751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018 1.998 1.998 0 0 0 2.83 0l2.5-2.5a2.002 2.002 0 0 0-2.83-2.83l-1.25 1.25a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042Zm-4.69 9.64a1.998 1.998 0 0 0 2.83 0l1.25-1.25a.751.751 0 0 1 1.042.018.751.751 0 0 1 .018 1.042l-1.25 1.25a3.5 3.5 0 1 1-4.95-4.95l2.5-2.5a3.5 3.5 0 0 1 4.95 0 .751.751 0 0 1-.018 1.042.751.751 0 0 1-1.042.018 1.998 1.998 0 0 0-2.83 0l-2.5 2.5a1.998 1.998 0 0 0 0 2.83Z"></path></svg></a></div>
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">感谢这些优秀的人（</font></font><a href="https://allcontributors.org/docs/en/emoji-key" rel="nofollow"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">表情符号键</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">）：</font></font></p>
 
-In development, you can also run arbitrary commands inside the Docker environment:
 
-```console
-$ cog run python train.py
-...
-```
 
-Or, [spin up a Jupyter notebook](docs/notebooks.md):
-
-```console
-$ cog run -p 8888 jupyter notebook --allow-root --ip=0.0.0.0
-```
--->
-
-## Why are we building this?
-
-It's really hard for researchers to ship machine learning models to production.
-
-Part of the solution is Docker, but it is so complex to get it to work: Dockerfiles, pre-/post-processing, Flask servers, CUDA versions. More often than not the researcher has to sit down with an engineer to get the damn thing deployed.
-
-[Andreas](https://github.com/andreasjansson) and [Ben](https://github.com/bfirsh) created Cog. Andreas used to work at Spotify, where he built tools for building and deploying ML models with Docker. Ben worked at Docker, where he created [Docker Compose](https://github.com/docker/compose).
-
-We realized that, in addition to Spotify, other companies were also using Docker to build and deploy machine learning models. [Uber](https://eng.uber.com/michelangelo-pyml/) and others have built similar systems. So, we're making an open source version so other people can do this too.
-
-Hit us up if you're interested in using it or want to collaborate with us. [We're on Discord](https://discord.gg/replicate) or email us at [team@replicate.com](mailto:team@replicate.com).
-
-## Prerequisites
-
-- **macOS, Linux or Windows 11**. Cog works on macOS, Linux and Windows 11 with [WSL 2](docs/wsl2/wsl2.md)
-- **Docker**. Cog uses Docker to create a container for your model. You'll need to [install Docker](https://docs.docker.com/get-docker/) before you can run Cog. If you install Docker Engine instead of Docker Desktop, you will need to [install Buildx](https://docs.docker.com/build/architecture/#buildx) as well.
-
-## Install
-
-If you're using macOS, you can install Cog using Homebrew:
-
-```console
-brew install cog
-```
-
-You can also download and install the latest release of Cog
-directly from GitHub by running the following commands in a terminal:
-
-```console
-sudo curl -o /usr/local/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"
-sudo chmod +x /usr/local/bin/cog
-```
-
-Alternatively, you can build Cog from source and install it with these commands:
-
-```console
-make
-sudo make install
-```
-
-## Upgrade
-
-If you previously installed Cog from a GitHub Releases URL, you can upgrade to the latest version by running the same commands you used to install it:
-
-```console
-sudo curl -o /usr/local/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"
-sudo chmod +x /usr/local/bin/cog
-```
-
-If you're using macOS and you previously installed Cog with Homebrew, run the following:
-
-```console
-brew upgrade cog
-```
-
-## Next steps
-
-- [Get started with an example model](docs/getting-started.md)
-- [Get started with your own model](docs/getting-started-own-model.md)
-- [Using Cog with notebooks](docs/notebooks.md)
-- [Using Cog with Windows 11](docs/wsl2/wsl2.md)
-- [Take a look at some examples of using Cog](https://github.com/replicate/cog-examples)
-- [Deploy models with Cog](docs/deploy.md)
-- [`cog.yaml` reference](docs/yaml.md) to learn how to define your model's environment
-- [Prediction interface reference](docs/python.md) to learn how the `Predictor` interface works
-- [Training interface reference](docs/training.md) to learn how to add a fine-tuning API to your model
-- [HTTP API reference](docs/http.md) to learn how to use the HTTP API that models serve
-
-## Need help?
-
-[Join us in #cog on Discord.](https://discord.gg/replicate)
-
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://fir.sh/"><img src="https://avatars.githubusercontent.com/u/40906?v=4?s=100" width="100px;" alt="Ben Firshman"/><br /><sub><b>Ben Firshman</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=bfirsh" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=bfirsh" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://replicate.ai/"><img src="https://avatars.githubusercontent.com/u/713993?v=4?s=100" width="100px;" alt="Andreas Jansson"/><br /><sub><b>Andreas Jansson</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=andreasjansson" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=andreasjansson" title="Documentation">📖</a> <a href="#maintenance-andreasjansson" title="Maintenance">🚧</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://zeke.sikelianos.com/"><img src="https://avatars.githubusercontent.com/u/2289?v=4?s=100" width="100px;" alt="Zeke Sikelianos"/><br /><sub><b>Zeke Sikelianos</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=zeke" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=zeke" title="Documentation">📖</a> <a href="#tool-zeke" title="Tools">🔧</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://rory.bio/"><img src="https://avatars.githubusercontent.com/u/9436784?v=4?s=100" width="100px;" alt="Rory Byrne"/><br /><sub><b>Rory Byrne</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=synek" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=synek" title="Documentation">📖</a> <a href="https://github.com/replicate/cog/commits?author=synek" title="Tests">⚠️</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/hangtwenty"><img src="https://avatars.githubusercontent.com/u/2420688?v=4?s=100" width="100px;" alt="Michael Floering"/><br /><sub><b>Michael Floering</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=hangtwenty" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=hangtwenty" title="Documentation">📖</a> <a href="#ideas-hangtwenty" title="Ideas, Planning, & Feedback">🤔</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://bencevans.io/"><img src="https://avatars.githubusercontent.com/u/638535?v=4?s=100" width="100px;" alt="Ben Evans"/><br /><sub><b>Ben Evans</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=bencevans" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://shashank.pw/"><img src="https://avatars.githubusercontent.com/u/778870?v=4?s=100" width="100px;" alt="shashank agarwal"/><br /><sub><b>shashank agarwal</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=imshashank" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=imshashank" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://fir.sh/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/40906?v=4?s=100" width="100px;" alt="本·菲尔什曼" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=bfirsh" title="文档"><font style="vertical-align: inherit;">本·</font></a><a href="https://fir.sh/" rel="nofollow"><sub><b><font style="vertical-align: inherit;">菲尔什曼</font></b></sub></a></font><br><a href="https://github.com/replicate/cog/commits?author=bfirsh" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖</font></font></a> <a href="https://github.com/replicate/cog/commits?author=bfirsh" title="文档"><font style="vertical-align: inherit;"></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://replicate.ai/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/713993?v=4?s=100" width="100px;" alt="安德烈亚斯·杨松" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">安德烈亚斯</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="#maintenance-andreasjansson" title="维护"><font style="vertical-align: inherit;">·</font></a><a href="https://github.com/replicate/cog/commits?author=andreasjansson" title="文档"><font style="vertical-align: inherit;">扬森</font></a></font><br><a href="https://github.com/replicate/cog/commits?author=andreasjansson" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖🚧</font></font></a> <a href="https://github.com/replicate/cog/commits?author=andreasjansson" title="文档"><font style="vertical-align: inherit;"></font></a> <a href="#maintenance-andreasjansson" title="维护"><font style="vertical-align: inherit;"></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://zeke.sikelianos.com/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/2289?v=4?s=100" width="100px;" alt="泽克·西凯里阿诺斯" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"></font></b></sub></a><font style="vertical-align: inherit;"><a href="#tool-zeke" title="工具"><font style="vertical-align: inherit;">泽克</font></a><a href="https://github.com/replicate/cog/commits?author=zeke" title="文档"><font style="vertical-align: inherit;">·</font></a><a href="http://zeke.sikelianos.com/" rel="nofollow"><sub><b><font style="vertical-align: inherit;">西凯里阿诺斯</font></b></sub></a></font><br><a href="https://github.com/replicate/cog/commits?author=zeke" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖🔧</font></font></a> <a href="https://github.com/replicate/cog/commits?author=zeke" title="文档"><font style="vertical-align: inherit;"></font></a> <a href="#tool-zeke" title="工具"><font style="vertical-align: inherit;"></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://rory.bio/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/9436784?v=4?s=100" width="100px;" alt="罗里·伯恩" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">罗里·</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=synek" title="文档"><font style="vertical-align: inherit;">伯恩</font></a></font><br><a href="https://github.com/replicate/cog/commits?author=synek" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖</font></font></a> <a href="https://github.com/replicate/cog/commits?author=synek" title="文档"><font style="vertical-align: inherit;"></font></a> <a href="https://github.com/replicate/cog/commits?author=synek" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/hangtwenty"><img src="https://avatars.githubusercontent.com/u/2420688?v=4?s=100" width="100px;" alt="迈克尔·弗洛林" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"></font></b></sub></a><font style="vertical-align: inherit;"><a href="#ideas-hangtwenty" title="想法、规划和反馈"><font style="vertical-align: inherit;">迈克尔</font></a><a href="https://github.com/replicate/cog/commits?author=hangtwenty" title="文档"><font style="vertical-align: inherit;">·</font></a><a href="https://github.com/hangtwenty"><sub><b><font style="vertical-align: inherit;">弗洛林</font></b></sub></a></font><br><a href="https://github.com/replicate/cog/commits?author=hangtwenty" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖🤔</font></font></a> <a href="https://github.com/replicate/cog/commits?author=hangtwenty" title="文档"><font style="vertical-align: inherit;"></font></a> <a href="#ideas-hangtwenty" title="想法、规划和反馈"><font style="vertical-align: inherit;"></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://bencevans.io/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/638535?v=4?s=100" width="100px;" alt="本埃文斯" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">本·埃文斯</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=bencevans" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://shashank.pw/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/778870?v=4?s=100" width="100px;" alt="沙尚克·阿加瓦尔" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=imshashank" title="文档"><font style="vertical-align: inherit;">沙尚克·</font></a><a href="https://shashank.pw/" rel="nofollow"><sub><b><font style="vertical-align: inherit;">阿加瓦尔</font></b></sub></a></font><br><a href="https://github.com/replicate/cog/commits?author=imshashank" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖</font></font></a> <a href="https://github.com/replicate/cog/commits?author=imshashank" title="文档"><font style="vertical-align: inherit;"></font></a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://victorxlr.me/"><img src="https://avatars.githubusercontent.com/u/22397950?v=4?s=100" width="100px;" alt="VictorXLR"/><br /><sub><b>VictorXLR</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=VictorXLR" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=VictorXLR" title="Documentation">📖</a> <a href="https://github.com/replicate/cog/commits?author=VictorXLR" title="Tests">⚠️</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://annahung31.github.io/"><img src="https://avatars.githubusercontent.com/u/39179888?v=4?s=100" width="100px;" alt="hung anna"/><br /><sub><b>hung anna</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aannahung31" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://notes.variogr.am/"><img src="https://avatars.githubusercontent.com/u/76612?v=4?s=100" width="100px;" alt="Brian Whitman"/><br /><sub><b>Brian Whitman</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Abwhitman" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/JimothyJohn"><img src="https://avatars.githubusercontent.com/u/24216724?v=4?s=100" width="100px;" alt="JimothyJohn"/><br /><sub><b>JimothyJohn</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3AJimothyJohn" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ericguizzo"><img src="https://avatars.githubusercontent.com/u/26746670?v=4?s=100" width="100px;" alt="ericguizzo"/><br /><sub><b>ericguizzo</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aericguizzo" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://www.dominicbaggott.com"><img src="https://avatars.githubusercontent.com/u/74812?v=4?s=100" width="100px;" alt="Dominic Baggott"/><br /><sub><b>Dominic Baggott</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=evilstreak" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=evilstreak" title="Tests">⚠️</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dashstander"><img src="https://avatars.githubusercontent.com/u/7449128?v=4?s=100" width="100px;" alt="Dashiell Stander"/><br /><sub><b>Dashiell Stander</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Adashstander" title="Bug reports">🐛</a> <a href="https://github.com/replicate/cog/commits?author=dashstander" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=dashstander" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://victorxlr.me/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/22397950?v=4?s=100" width="100px;" alt="维克多XLR" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">维克托</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=VictorXLR" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">XLR💻📖</font></font></a> <a href="https://github.com/replicate/cog/commits?author=VictorXLR" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a> <a href="https://github.com/replicate/cog/commits?author=VictorXLR" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://annahung31.github.io/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/39179888?v=4?s=100" width="100px;" alt="洪安娜" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">洪安娜</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Aannahung31" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://notes.variogr.am/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/76612?v=4?s=100" width="100px;" alt="布赖恩·惠特曼" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">布莱恩·惠特曼</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Abwhitman" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/JimothyJohn"><img src="https://avatars.githubusercontent.com/u/24216724?v=4?s=100" width="100px;" alt="吉莫西·约翰" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">吉莫西约翰</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3AJimothyJohn" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ericguizzo"><img src="https://avatars.githubusercontent.com/u/26746670?v=4?s=100" width="100px;" alt="埃里克吉佐" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">埃里克吉佐</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Aericguizzo" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.dominicbaggott.com" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/74812?v=4?s=100" width="100px;" alt="多米尼克·巴戈特" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">多米尼克·巴格特</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=evilstreak" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻</font></font></a> <a href="https://github.com/replicate/cog/commits?author=evilstreak" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/dashstander"><img src="https://avatars.githubusercontent.com/u/7449128?v=4?s=100" width="100px;" alt="达希尔·斯坦德" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=dashstander" title="代码"><font style="vertical-align: inherit;">达希尔·</font></a><a href="https://github.com/dashstander"><sub><b><font style="vertical-align: inherit;">斯坦德</font></b></sub></a></font><br><a href="https://github.com/replicate/cog/issues?q=author%3Adashstander" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛💻</font></font></a> <a href="https://github.com/replicate/cog/commits?author=dashstander" title="代码"><font style="vertical-align: inherit;"></font></a> <a href="https://github.com/replicate/cog/commits?author=dashstander" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hurricane-eye"><img src="https://avatars.githubusercontent.com/u/31437546?v=4?s=100" width="100px;" alt="Shuwei Liang"/><br /><sub><b>Shuwei Liang</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3AHurricane-eye" title="Bug reports">🐛</a> <a href="#question-Hurricane-eye" title="Answering Questions">💬</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ericallam"><img src="https://avatars.githubusercontent.com/u/534?v=4?s=100" width="100px;" alt="Eric Allam"/><br /><sub><b>Eric Allam</b></sub></a><br /><a href="#ideas-ericallam" title="Ideas, Planning, & Feedback">🤔</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://perdomo.me"><img src="https://avatars.githubusercontent.com/u/178474?v=4?s=100" width="100px;" alt="Iván Perdomo"/><br /><sub><b>Iván Perdomo</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aiperdomo" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://charlesfrye.github.io"><img src="https://avatars.githubusercontent.com/u/10442975?v=4?s=100" width="100px;" alt="Charles Frye"/><br /><sub><b>Charles Frye</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=charlesfrye" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/phamquiluan"><img src="https://avatars.githubusercontent.com/u/24642166?v=4?s=100" width="100px;" alt="Luan Pham"/><br /><sub><b>Luan Pham</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aphamquiluan" title="Bug reports">🐛</a> <a href="https://github.com/replicate/cog/commits?author=phamquiluan" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TommyDew42"><img src="https://avatars.githubusercontent.com/u/46992350?v=4?s=100" width="100px;" alt="TommyDew"/><br /><sub><b>TommyDew</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=TommyDew42" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://m4ke.org"><img src="https://avatars.githubusercontent.com/u/27?v=4?s=100" width="100px;" alt="Jesse Andrews"/><br /><sub><b>Jesse Andrews</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="Documentation">📖</a> <a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Hurricane-eye"><img src="https://avatars.githubusercontent.com/u/31437546?v=4?s=100" width="100px;" alt="梁树伟" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">梁淑伟</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3AHurricane-eye" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛💬</font></font></a> <a href="#question-Hurricane-eye" title="回答问题"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ericallam"><img src="https://avatars.githubusercontent.com/u/534?v=4?s=100" width="100px;" alt="埃里克·阿拉姆" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">埃里克·阿拉姆</font></font></b></sub></a><br><a href="#ideas-ericallam" title="想法、规划和反馈"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🤔</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://perdomo.me" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/178474?v=4?s=100" width="100px;" alt="伊万·佩尔多莫" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">伊万·佩尔多莫</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Aiperdomo" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://charlesfrye.github.io" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/10442975?v=4?s=100" width="100px;" alt="查尔斯·弗莱" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">查尔斯·弗莱</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=charlesfrye" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/phamquiluan"><img src="https://avatars.githubusercontent.com/u/24642166?v=4?s=100" width="100px;" alt="范栾" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">范</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=phamquiluan" title="文档"><font style="vertical-align: inherit;">栾</font></a></font><br><a href="https://github.com/replicate/cog/issues?q=author%3Aphamquiluan" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛📖</font></font></a> <a href="https://github.com/replicate/cog/commits?author=phamquiluan" title="文档"><font style="vertical-align: inherit;"></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/TommyDew42"><img src="https://avatars.githubusercontent.com/u/46992350?v=4?s=100" width="100px;" alt="汤米·杜" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">汤米露</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=TommyDew42" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://m4ke.org" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/27?v=4?s=100" width="100px;" alt="杰西·安德鲁斯" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">杰西·</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="文档"><font style="vertical-align: inherit;">安德鲁斯</font></a></font><br><a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖</font></font></a> <a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="文档"><font style="vertical-align: inherit;"></font></a> <a href="https://github.com/replicate/cog/commits?author=anotherjesse" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://whiteink.com"><img src="https://avatars.githubusercontent.com/u/3602?v=4?s=100" width="100px;" alt="Nick Stenning"/><br /><sub><b>Nick Stenning</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=nickstenning" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=nickstenning" title="Documentation">📖</a> <a href="#design-nickstenning" title="Design">🎨</a> <a href="#infra-nickstenning" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/replicate/cog/commits?author=nickstenning" title="Tests">⚠️</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://merrell.io/"><img src="https://avatars.githubusercontent.com/u/14996837?v=4?s=100" width="100px;" alt="Justin Merrell"/><br /><sub><b>Justin Merrell</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=justinmerrell" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ruriky"><img src="https://avatars.githubusercontent.com/u/19946546?v=4?s=100" width="100px;" alt="Rurik Ylä-Onnenvuori"/><br /><sub><b>Rurik Ylä-Onnenvuori</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aruriky" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://www.youka.club/"><img src="https://avatars.githubusercontent.com/u/59315275?v=4?s=100" width="100px;" alt="Youka"/><br /><sub><b>Youka</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Ayoukaclub" title="Bug reports">🐛</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/afiaka87"><img src="https://avatars.githubusercontent.com/u/3994972?v=4?s=100" width="100px;" alt="Clay Mullis"/><br /><sub><b>Clay Mullis</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=afiaka87" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mattt"><img src="https://avatars.githubusercontent.com/u/7659?v=4?s=100" width="100px;" alt="Mattt"/><br /><sub><b>Mattt</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=mattt" title="Code">💻</a> <a href="https://github.com/replicate/cog/commits?author=mattt" title="Documentation">📖</a> <a href="#infra-mattt" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Juneezee"><img src="https://avatars.githubusercontent.com/u/20135478?v=4?s=100" width="100px;" alt="Eng Zer Jun"/><br /><sub><b>Eng Zer Jun</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=Juneezee" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://whiteink.com" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/3602?v=4?s=100" width="100px;" alt="尼克·斯坦宁" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">尼克</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="#infra-nickstenning" title="基础设施（托管、构建工具等）"><font style="vertical-align: inherit;">·</font></a><a href="#design-nickstenning" title="设计"><font style="vertical-align: inherit;">斯坦宁</font></a></font><br><a href="https://github.com/replicate/cog/commits?author=nickstenning" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖🎨🚇</font></font></a> <a href="https://github.com/replicate/cog/commits?author=nickstenning" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a> <a href="#design-nickstenning" title="设计"><font style="vertical-align: inherit;"></font></a> <a href="#infra-nickstenning" title="基础设施（托管、构建工具等）"><font style="vertical-align: inherit;"></font></a> <a href="https://github.com/replicate/cog/commits?author=nickstenning" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://merrell.io/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/14996837?v=4?s=100" width="100px;" alt="贾斯汀·梅雷尔" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">贾斯汀·梅雷尔</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=justinmerrell" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ruriky"><img src="https://avatars.githubusercontent.com/u/19946546?v=4?s=100" width="100px;" alt="鲁里克·伊拉-奥南沃里" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">鲁里克·伊拉-奥南沃里</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Aruriky" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://www.youka.club/" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/59315275?v=4?s=100" width="100px;" alt="尤卡" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">尤卡</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Ayoukaclub" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/afiaka87"><img src="https://avatars.githubusercontent.com/u/3994972?v=4?s=100" width="100px;" alt="克莱·穆利斯" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">克莱·穆利斯</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=afiaka87" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mattt"><img src="https://avatars.githubusercontent.com/u/7659?v=4?s=100" width="100px;" alt="马特" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">马特</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=mattt" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻📖🚇</font></font></a> <a href="https://github.com/replicate/cog/commits?author=mattt" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a> <a href="#infra-mattt" title="基础设施（托管、构建工具等）"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Juneezee"><img src="https://avatars.githubusercontent.com/u/20135478?v=4?s=100" width="100px;" alt="恩泽君" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">恩泽君</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=Juneezee" title="测试"><g-emoji class="g-emoji" alias="warning"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">⚠️</font></font></g-emoji></a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bbedward"><img src="https://avatars.githubusercontent.com/u/550752?v=4?s=100" width="100px;" alt="BB"/><br /><sub><b>BB</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=bbedward" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/williamluer"><img src="https://avatars.githubusercontent.com/u/85975676?v=4?s=100" width="100px;" alt="williamluer"/><br /><sub><b>williamluer</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=williamluer" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://sirupsen.com"><img src="https://avatars.githubusercontent.com/u/97400?v=4?s=100" width="100px;" alt="Simon Eskildsen"/><br /><sub><b>Simon Eskildsen</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=sirupsen" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://erbridge.co.uk"><img src="https://avatars.githubusercontent.com/u/1027364?v=4?s=100" width="100px;" alt="F"/><br /><sub><b>F</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aerbridge" title="Bug reports">🐛</a> <a href="https://github.com/replicate/cog/commits?author=erbridge" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/philandstuff"><img src="https://avatars.githubusercontent.com/u/581269?v=4?s=100" width="100px;" alt="Philip Potter"/><br /><sub><b>Philip Potter</b></sub></a><br /><a href="https://github.com/replicate/cog/issues?q=author%3Aphilandstuff" title="Bug reports">🐛</a> <a href="https://github.com/replicate/cog/commits?author=philandstuff" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/joannejchen"><img src="https://avatars.githubusercontent.com/u/33409024?v=4?s=100" width="100px;" alt="Joanne Chen"/><br /><sub><b>Joanne Chen</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=joannejchen" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://technillogue.github.io"><img src="https://avatars.githubusercontent.com/u/945691?v=4?s=100" width="100px;" alt="technillogue"/><br /><sub><b>technillogue</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=technillogue" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bbedward"><img src="https://avatars.githubusercontent.com/u/550752?v=4?s=100" width="100px;" alt="BB" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">BB💻</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=bbedward" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/williamluer"><img src="https://avatars.githubusercontent.com/u/85975676?v=4?s=100" width="100px;" alt="威廉姆鲁尔" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">威廉姆鲁尔</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=williamluer" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://sirupsen.com" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/97400?v=4?s=100" width="100px;" alt="西蒙·埃斯基尔森" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">西蒙·埃斯基尔森</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=sirupsen" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://erbridge.co.uk" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/1027364?v=4?s=100" width="100px;" alt="F" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">F🐛💻</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/issues?q=author%3Aerbridge" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a> <a href="https://github.com/replicate/cog/commits?author=erbridge" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">&ZeroWidthSpace;</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/philandstuff"><img src="https://avatars.githubusercontent.com/u/581269?v=4?s=100" width="100px;" alt="菲利普·波特" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">菲利普·</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="https://github.com/replicate/cog/commits?author=philandstuff" title="代码"><font style="vertical-align: inherit;">波特</font></a></font><br><a href="https://github.com/replicate/cog/issues?q=author%3Aphilandstuff" title="错误报告"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">🐛💻</font></font></a> <a href="https://github.com/replicate/cog/commits?author=philandstuff" title="代码"><font style="vertical-align: inherit;"></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/joannejchen"><img src="https://avatars.githubusercontent.com/u/33409024?v=4?s=100" width="100px;" alt="陈乔恩" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">陈乔恩</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=joannejchen" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖</font></font></a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://technillogue.github.io" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/945691?v=4?s=100" width="100px;" alt="技术语言" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">技术对话</font></font></b></sub></a><br><a href="https://github.com/replicate/cog/commits?author=technillogue" title="代码"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">💻</font></font></a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://aroncarroll.com"><img src="https://avatars.githubusercontent.com/u/47144?v=4?s=100" width="100px;" alt="Aron Carroll"/><br /><sub><b>Aron Carroll</b></sub></a><br /><a href="https://github.com/replicate/cog/commits?author=aron" title="Documentation">📖</a> <a href="https://github.com/replicate/cog/commits?author=aron" title="Code">💻</a> <a href="#ideas-aron" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://aroncarroll.com" rel="nofollow"><img src="https://avatars.githubusercontent.com/u/47144?v=4?s=100" width="100px;" alt="阿伦·卡罗尔" style="max-width: 100%;"><br><sub><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">阿伦</font></font></b></sub></a><font style="vertical-align: inherit;"><a href="#ideas-aron" title="想法、规划和反馈"><font style="vertical-align: inherit;">·</font></a><a href="https://github.com/replicate/cog/commits?author=aron" title="代码"><font style="vertical-align: inherit;">卡罗尔</font></a></font><br><a href="https://github.com/replicate/cog/commits?author=aron" title="文档"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">📖💻🤔</font></font></a> <a href="https://github.com/replicate/cog/commits?author=aron" title="代码"><font style="vertical-align: inherit;"></font></a> <a href="#ideas-aron" title="想法、规划和反馈"><font style="vertical-align: inherit;"></font></a></td>
     </tr>
   </tbody>
 </table>
 
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
 
-<!-- ALL-CONTRIBUTORS-LIST:END -->
 
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
+<p dir="auto"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">该项目遵循</font></font><a href="https://github.com/all-contributors/all-contributors"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">所有贡献者</font></font></a><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">规范。欢迎任何形式的贡献！</font></font></p>
+</article></div>
